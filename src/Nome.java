@@ -6,4 +6,5 @@ public enum Nome {
 	TORRE,
 	CAVALLO,
 	PEDONE;
+	
 }
