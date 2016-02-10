@@ -13,6 +13,7 @@ public abstract class Pedina extends Casella{
 	protected static final int nRighe = 8;
 	protected static final int nColonne = 8;
 
+
 	/**
 	 * 
 	 * 
@@ -20,8 +21,8 @@ public abstract class Pedina extends Casella{
 	 * @param 
 	 * @param colore
 	 */
-	public Pedina(Nome nome, Colore colore, int x, int y) {
-		super(x,y);
+	public Pedina(Nome nome, Colore colore, int riga, int colonna) {
+		super(riga, colonna);
 		this.nome = nome;
 		this.colore = colore;
 		
@@ -45,6 +46,7 @@ public abstract class Pedina extends Casella{
 		    this.setIcon(new ImageIcon(img));
 		  } catch (IOException ex) {
 		  }
+		
 		
 	}
 

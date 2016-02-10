@@ -1,20 +1,25 @@
 import java.awt.Color;
+
 import javax.swing.JButton;
 
 public class Casella extends JButton{// dvrebbe essere abstract
 	
 	public static final int DIMENSIONE = 50;
-	public int x;
-	public int y;
+	public int riga;
+	public int colonna;
 	
-	public Casella(int x, int y){
+	public Casella(int riga, int colonna){
 		super();
-		setBounds(x * DIMENSIONE, y * DIMENSIONE, DIMENSIONE, DIMENSIONE);
-		this.x = x;
-		this.y = y;
+		setBounds(colonna * DIMENSIONE, riga * DIMENSIONE, DIMENSIONE, DIMENSIONE);
+		this.riga = riga;
+		this.colonna = colonna;
 		this.setBackground(Color.BLUE);
 		setOpaque(false);
-		//setContentAreaFilled(false);
-		//setBorderPainted(false);
+	}
+	
+	public void cambiaPosizione(int riga, int colonna){
+		setBounds(colonna * DIMENSIONE, riga * DIMENSIONE, DIMENSIONE, DIMENSIONE);
+		this.riga = riga;
+		this.colonna = colonna;
 	}
 }
