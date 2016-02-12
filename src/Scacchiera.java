@@ -12,6 +12,7 @@ public class Scacchiera extends JFrame{
 
 	private static final int NUM = 8;
 	private Casella[][] griglia;
+	ActionListener action;
 
 	public Scacchiera(){
 		super();
@@ -32,7 +33,7 @@ public class Scacchiera extends JFrame{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//pack();
+
 		inizializzaGriglia();
 		setVisible(true);
 
@@ -74,7 +75,7 @@ public class Scacchiera extends JFrame{
 			//			getContentPane().add(griglia[6][i]);
 		}
 
-		ActionListener action = new ActionListener() {
+		action = new ActionListener() {
 			private Pedina pedinaDaMuovere;
 			private Casella casellaDiArrivo;
 			@Override
@@ -82,26 +83,35 @@ public class Scacchiera extends JFrame{
 				if(pedinaDaMuovere == null){
 					if(e.getSource() instanceof Pedina){
 						pedinaDaMuovere = (Pedina)e.getSource();
+						System.out.println("Source "+pedinaDaMuovere.riga + " " + pedinaDaMuovere.colonna);
 					}
 				}else{
 					casellaDiArrivo = (Casella)e.getSource();
-					
-					getContentPane().remove(pedinaDaMuovere);
-					getContentPane().remove(casellaDiArrivo);
-					
-					griglia[casellaDiArrivo.riga][casellaDiArrivo.colonna] = pedinaDaMuovere;
-					griglia[pedinaDaMuovere.riga][pedinaDaMuovere.colonna] = new Casella(pedinaDaMuovere.riga, pedinaDaMuovere.colonna);
-					
-					getContentPane().add(griglia[pedinaDaMuovere.riga][pedinaDaMuovere.colonna]);
-					
-					pedinaDaMuovere.cambiaPosizione(casellaDiArrivo.riga, casellaDiArrivo.colonna);
-					getContentPane().add(pedinaDaMuovere);
+					int mossa = pedinaDaMuovere
+							.mossePossibili(griglia)[casellaDiArrivo.riga][casellaDiArrivo.colonna];
+					System.out.println(mossa);
+					if(mossa > 0){
+						getContentPane().remove(pedinaDaMuovere);
+						getContentPane().remove(casellaDiArrivo);
+						casellaDiArrivo.removeActionListener(action);
+
+						griglia[casellaDiArrivo.riga][casellaDiArrivo.colonna] = pedinaDaMuovere;
+						griglia[pedinaDaMuovere.riga][pedinaDaMuovere.colonna] = new Casella(pedinaDaMuovere.riga, pedinaDaMuovere.colonna);
+						
+						griglia[pedinaDaMuovere.riga][pedinaDaMuovere.colonna].addActionListener(action);
+
+						getContentPane().add(griglia[pedinaDaMuovere.riga][pedinaDaMuovere.colonna]);
+
+						pedinaDaMuovere.cambiaPosizione(casellaDiArrivo.riga, casellaDiArrivo.colonna);
+						getContentPane().add(pedinaDaMuovere);
+
+						Scacchiera.this.repaint();
+					}
 					pedinaDaMuovere = null;
-					Scacchiera.this.repaint();
 				}
 			}
 		};
-		
+
 		for(int i = 0; i < NUM; i++){
 			for(int j = 0; j < NUM; j++){
 				griglia[i][j].addActionListener(action);

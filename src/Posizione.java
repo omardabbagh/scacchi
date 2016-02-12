@@ -11,14 +11,14 @@ public class Posizione {
 	 * 
 	 * @return riga
 	 */
-	public int getRiga(){
+	public int riga(){
 		return riga;
 	}
 	/**
 	 * 
 	 * @return colonna
 	 */
-	public int getColonna(){
+	public int colonna(){
 		return colonna;
 	}
 	

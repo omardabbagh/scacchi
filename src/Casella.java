@@ -22,4 +22,12 @@ public class Casella extends JButton{// dvrebbe essere abstract
 		this.riga = riga;
 		this.colonna = colonna;
 	}
+	
+	public int getRiga(){
+		return riga;
+	}
+	
+	public int getColonna(){
+		return colonna;
+	}
 }

@@ -69,9 +69,10 @@ public abstract class Pedina extends Casella{
 	/**
 	 * 
 	 * @param posPedina
-	 * @param scacchiera
+	 * @param griglia
 	 * @return 
 	 */
 //	public int[][] mossePossibili(Posizione posPedina,
 //			Pedina[][] scacchiera);
+	public abstract int[][] mossePossibili(Casella[][] griglia);
 }
