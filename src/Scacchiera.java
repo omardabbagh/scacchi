@@ -3,46 +3,67 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.text.Position;
+import javax.swing.JOptionPane;
 
 public class Scacchiera extends JFrame{
 
 	private static final int NUM = 8;
-	private Casella[][] griglia;
+	Casella[][] griglia;
 	private ActionListener action;
 	private Colore turno=Colore.BIANCO;
 	private Pedina reBianco;
 	private Pedina reNero;
 
-	public Scacchiera(){
-		super();
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		getContentPane().setLayout(null);
-		setSize(NUM*Casella.DIMENSIONE+5, NUM*Casella.DIMENSIONE + Casella.DIMENSIONE/2+4);
-		setResizable(false);
-		setLocation(10,10);
-		setVisible(true);
+	public Scacchiera(boolean test){
+		if(test){
+			griglia = new Casella[8][8];
+			turno=Colore.BIANCO;
+			
+			for(int i = 0; i < NUM; i++){
+				for(int j = 0; j < NUM; j++){
+					griglia[i][j] = new Casella(i,j);
+				}
+			}
+			
+			griglia[0][3] = new Re(Colore.NERO, 0,3);
+			griglia[2][1] = new Pedone(Colore.NERO, 2, 1);
+			griglia[3][0] = new Pedone(Colore.BIANCO, 3, 0);
+			griglia[4][3] = new Regina(Colore.NERO, 4, 3);
+			griglia[4][7] = new Torre(Colore.NERO, 4, 7);
+			griglia[5][0] = new Cavallo(Colore.BIANCO, 5, 0);
+			griglia[5][6] = new Alfiere(Colore.BIANCO ,5, 6);
+			griglia[6][0] = new Pedone(Colore.NERO ,6 ,0);
+			griglia[7][3] = new Re(Colore.BIANCO, 7, 3);
+			reNero = (Pedina)griglia[0][3];
+			reBianco = (Pedina)griglia[7][3];
+		}else{
+
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			getContentPane().setLayout(null);
+			setSize(NUM*Casella.DIMENSIONE+5, NUM*Casella.DIMENSIONE + Casella.DIMENSIONE/2+4);
+			setResizable(false);
+			setLocation(10,10);
+			setVisible(true);
 
 
-		try {
-			ImageIcon immagine = new ImageIcon(ImageIO.read(new File("./grafica/scacchiera.png")));
-			JLabel sfondo = new JLabel(immagine);
-			sfondo.setVisible(true);
-			setContentPane(sfondo);
+			try {
+				ImageIcon immagine = new ImageIcon(ImageIO.read(new File("./grafica/scacchiera.png")));
+				JLabel sfondo = new JLabel(immagine);
+				sfondo.setVisible(true);
+				setContentPane(sfondo);
 
-		} catch (IOException e) {
-			e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			inizializzaGriglia();
+			setVisible(true);
 		}
-
-		inizializzaGriglia();
-		setVisible(true);
 
 	}
 
@@ -59,12 +80,10 @@ public class Scacchiera extends JFrame{
 		griglia[0][7] = new Torre(Colore.NERO, 0,7);
 		for(int i = 0; i < NUM; i++){
 			griglia[1][i] = new Pedone(Colore.NERO, 1,i);
-			//			getContentPane().add(griglia[1][i]);
 		}
 		for(int i = 2; i < NUM-2; i++){
 			for(int j = 0; j < NUM; j++){
 				griglia[i][j] = new Casella(i,j);
-				//				getContentPane().add(griglia[i][j]);
 			}
 		}
 
@@ -79,7 +98,6 @@ public class Scacchiera extends JFrame{
 
 		for(int i = 0; i < NUM; i++){
 			griglia[6][i] = new Pedone(Colore.BIANCO, 6,i);
-			//			getContentPane().add(griglia[6][i]);
 		}
 
 		action = new ActionListener() {
@@ -97,26 +115,38 @@ public class Scacchiera extends JFrame{
 					int mossa = sorgente
 							.mossePossibili(griglia)[destinazione.riga][destinazione.colonna];
 					System.out.println(mossa);
-					if(mossaEseguita(sorgente, destinazione)){
+					int tempRiga = sorgente.riga;
+					int tempColonna = sorgente.colonna;
+					if(mossa(sorgente, destinazione)){
 						getContentPane().remove(sorgente);
 						getContentPane().remove(destinazione);
 						destinazione.removeActionListener(action);
+//						griglia[destinazione.riga][destinazione.colonna] = sorgente;
+//						griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
 
-						griglia[destinazione.riga][destinazione.colonna] = sorgente;
-						griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
+						griglia[tempRiga][tempColonna].addActionListener(action);
 
-						griglia[sorgente.riga][sorgente.colonna].addActionListener(action);
+						getContentPane().add(griglia[tempRiga][tempColonna]);
 
-						getContentPane().add(griglia[sorgente.riga][sorgente.colonna]);
-
-						sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
+//						sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
+						
 						getContentPane().add(sorgente);
 						Scacchiera.this.repaint();
-						int scacco = scacco();
-						boolean sm=false;	//sm = scacco matto
-						if(scacco!=0 && scaccoMatto()){
-							System.out.println("Scacco Matto");;
+
+						evoluzionePedina(sorgente);
+
+
+						if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
+						else{turno=Colore.BIANCO;}
+
+						if(scacco() !=0 && scaccoMatto()){
+							int scelta = JOptionPane.showConfirmDialog(null, turno+" hai perso!\nVuoi giocare una nuova partita?","Scacco Matto",JOptionPane.YES_NO_OPTION);
+							if(scelta == 0)
+								ricominciaPartita();
+							else 
+								System.exit(0);
 						}
+
 					}
 					sorgente = null;
 				}
@@ -132,30 +162,54 @@ public class Scacchiera extends JFrame{
 		reBianco = (Pedina)griglia[7][4];
 		reNero = (Pedina)griglia[0][4];
 	}
-	private boolean mossaEseguita(Pedina sorgente, Casella destinazione) {
+
+	private void evoluzionePedina(Pedina pedina) {
+		if(turno==Colore.BIANCO && pedina instanceof Pedone && pedina.riga==0){
+			scegliPedina(pedina);
+		}
+		else if(turno==Colore.NERO && pedina instanceof Pedone && pedina.riga==7){
+			scegliPedina(pedina);
+		}
+		
+
+	}
+
+	private void scegliPedina(Pedina p){
+		new ElencoPedine(turno, this, p);
+	}
+
+	public void sostituisciPedina(Pedina pedinaDaCambiare, Pedina nuovaPedina) {
+		griglia[pedinaDaCambiare.riga][pedinaDaCambiare.colonna] = nuovaPedina;
+		pedinaDaCambiare.removeActionListener(action);
+		nuovaPedina.addActionListener(action);
+		this.getContentPane().remove(pedinaDaCambiare);
+		this.getContentPane().add(nuovaPedina);
+		Scacchiera.this.repaint();
+	}
+
+	boolean mossa(Pedina sorgente, Casella destinazione) {
+		if(! (sorgente instanceof Pedina))
+			return false;
+				
 		if(!puoMuovere(sorgente, destinazione))
 			return false;
 		int mossa = sorgente
 				.mossePossibili(griglia)[destinazione.riga][destinazione.colonna];
 		if(mossa == 0 || !turno.equals(sorgente.getColore()))
 			return false;
-
-		if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
-		else{turno=Colore.BIANCO;}
+		griglia[destinazione.riga][destinazione.colonna] = sorgente;
+		griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
+		sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
+		
 		return true;
 	}
 
 	private boolean puoMuovere(Pedina sorgente, Casella destinazione){
-		boolean canMove = true;
+
 		int tempRiga;
 		int tempColonna;
+		boolean permesso = true;
 
-		//		if(griglia[destinazione.riga][destinazione.colonna] instanceof Pedina){
-		//			mangiato = true;
-		//			p=(Pedina)griglia[destinazione.riga][destinazione.colonna];
-		//		}
-		//		if(destinazione instanceof Pedina)
-		//			pedineInGioco.remove((Pedina)destinazione);
 		griglia[destinazione.riga][destinazione.colonna]=griglia[sorgente.riga][sorgente.colonna];
 		tempRiga = sorgente.riga;
 		tempColonna = sorgente.colonna;
@@ -163,29 +217,19 @@ public class Scacchiera extends JFrame{
 		sorgente.colonna = destinazione.colonna;
 		griglia[tempRiga][tempColonna]= new Casella(tempRiga, tempColonna);
 
-		//controllo se la mossa provoca lo scacco del re con lo stesso colore
-		if(scacco() != 0)
-			canMove = false;
-		//		System.out.println("SCacco? " + scacco());
-		//		if(turno==Colore.BIANCO){
-		//			if(scacco()==1)canMove = false;
-		//		}else{
-		//			if(scacco()==-1)canMove = false;
-		//		}
-
-		//rollback, ripristino la situazione precedente alla mossa
+		if(turno==Colore.BIANCO){
+			if(scacco()==1)permesso = false;
+		}else{
+			if(scacco()==-1)permesso = false;
+		}
 		griglia[tempRiga][tempColonna]=griglia[destinazione.riga][destinazione.colonna];
 		sorgente.riga = tempRiga;
 		sorgente.colonna = tempColonna;
 		griglia[destinazione.riga][destinazione.colonna] = destinazione;
-		//		if(destinazione instanceof Pedina)
-		//			pedineInGioco.add((Pedina)destinazione);
-		//		//		if(mangiato){
-		//			griglia[destinazione.riga][destinazione.colonna] = p;
-		//		}
-		//return canMove;
-		return canMove;
+		return permesso;
 	}
+
+
 	public int scacco(){
 		int[][] mosssePossibili;
 		Pedina pedina;
@@ -223,7 +267,6 @@ public class Scacchiera extends JFrame{
 			if(puoMuovere(re,griglia[coordinata[0]][coordinata[1]]))
 				return false;
 		}
-		//il re non ha mosse possibili
 		if(!salvataggioRe())
 			return true;
 		else
@@ -277,6 +320,15 @@ public class Scacchiera extends JFrame{
 
 	private void ricominciaPartita(){
 
+		for(int i = 0; i < NUM; i++){
+			for(int j = 0; j < NUM; j++){
+				griglia[i][j].addActionListener(action);
+				griglia[i][j].removeActionListener(action);
+				getContentPane().remove(griglia[i][j]);
+			}
+		}
+		inizializzaGriglia();
+		Scacchiera.this.repaint();
 	}
 
 	void print(int[][] mosse){
@@ -291,7 +343,8 @@ public class Scacchiera extends JFrame{
 
 
 	public static void main(String[] argv){
-		new Scacchiera();
+		new Scacchiera(false);
+
 	}
 
 
