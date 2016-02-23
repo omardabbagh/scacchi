@@ -15,21 +15,24 @@ public class Scacchiera extends JFrame{
 	private static final int NUM = 8;
 	Casella[][] griglia;
 	private ActionListener action;
-	private Colore turno=Colore.BIANCO;
+	private Colore turno;
 	private Pedina reBianco;
 	private Pedina reNero;
+	private  boolean pedinaDaEvolvere = false;
+	public static final  int SCACCO_BIANCO = 1;
+	public static final int SCACCO_NERO = -1;
 
 	public Scacchiera(boolean test){
 		if(test){
 			griglia = new Casella[8][8];
-			turno=Colore.BIANCO;
-			
+			turno=Colore.NERO;
+
 			for(int i = 0; i < NUM; i++){
 				for(int j = 0; j < NUM; j++){
 					griglia[i][j] = new Casella(i,j);
 				}
 			}
-			
+
 			griglia[0][3] = new Re(Colore.NERO, 0,3);
 			griglia[2][1] = new Pedone(Colore.NERO, 2, 1);
 			griglia[3][0] = new Pedone(Colore.BIANCO, 3, 0);
@@ -41,6 +44,8 @@ public class Scacchiera extends JFrame{
 			griglia[7][3] = new Re(Colore.BIANCO, 7, 3);
 			reNero = (Pedina)griglia[0][3];
 			reBianco = (Pedina)griglia[7][3];
+			turno=Colore.BIANCO;
+
 		}else{
 
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -99,7 +104,9 @@ public class Scacchiera extends JFrame{
 		for(int i = 0; i < NUM; i++){
 			griglia[6][i] = new Pedone(Colore.BIANCO, 6,i);
 		}
-
+		reBianco = (Pedina)griglia[7][4];
+		reNero = (Pedina)griglia[0][4];
+		
 		action = new ActionListener() {
 			private Pedina sorgente;
 			private Casella destinazione;
@@ -108,36 +115,35 @@ public class Scacchiera extends JFrame{
 				if(sorgente == null){
 					if(e.getSource() instanceof Pedina){
 						sorgente = (Pedina)e.getSource();
-						System.out.println("Source "+sorgente.riga + " " + sorgente.colonna);
 					}
 				}else{
 					destinazione = (Casella)e.getSource();
 					int mossa = sorgente
 							.mossePossibili(griglia)[destinazione.riga][destinazione.colonna];
-					System.out.println(mossa);
 					int tempRiga = sorgente.riga;
 					int tempColonna = sorgente.colonna;
 					if(mossa(sorgente, destinazione)){
 						getContentPane().remove(sorgente);
 						getContentPane().remove(destinazione);
 						destinazione.removeActionListener(action);
-//						griglia[destinazione.riga][destinazione.colonna] = sorgente;
-//						griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
+						//						griglia[destinazione.riga][destinazione.colonna] = sorgente;
+						//						griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
 
 						griglia[tempRiga][tempColonna].addActionListener(action);
 
 						getContentPane().add(griglia[tempRiga][tempColonna]);
 
-//						sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
-						
+						//						sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
+
 						getContentPane().add(sorgente);
 						Scacchiera.this.repaint();
 
-						evoluzionePedina(sorgente);
+						if(pedinaDaEvolvere)
+							evoluzionePedina(sorgente);
 
-
-						if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
-						else{turno=Colore.BIANCO;}
+						//
+						//						if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
+						//						else{turno=Colore.BIANCO;}
 
 						if(scacco() !=0 && scaccoMatto()){
 							int scelta = JOptionPane.showConfirmDialog(null, turno+" hai perso!\nVuoi giocare una nuova partita?","Scacco Matto",JOptionPane.YES_NO_OPTION);
@@ -152,30 +158,30 @@ public class Scacchiera extends JFrame{
 				}
 			}
 		};
-
 		for(int i = 0; i < NUM; i++){
 			for(int j = 0; j < NUM; j++){
 				griglia[i][j].addActionListener(action);
 				getContentPane().add(griglia[i][j]);
 			}
 		}
-		reBianco = (Pedina)griglia[7][4];
-		reNero = (Pedina)griglia[0][4];
+
+		turno=Colore.BIANCO;
 	}
 
 	private void evoluzionePedina(Pedina pedina) {
-		if(turno==Colore.BIANCO && pedina instanceof Pedone && pedina.riga==0){
-			scegliPedina(pedina);
-		}
-		else if(turno==Colore.NERO && pedina instanceof Pedone && pedina.riga==7){
-			scegliPedina(pedina);
-		}
-		
 
+		if(pedina.riga==0){
+			scegliPedina(Colore.BIANCO, pedina);
+		}
+		else if( pedina.riga==7){
+			scegliPedina(Colore.NERO, pedina);
+		}
+
+		pedinaDaEvolvere = false;
 	}
 
-	private void scegliPedina(Pedina p){
-		new ElencoPedine(turno, this, p);
+	private void scegliPedina(Colore colore, Pedina p){
+		new ElencoPedine(colore, this, p);
 	}
 
 	public void sostituisciPedina(Pedina pedinaDaCambiare, Pedina nuovaPedina) {
@@ -188,9 +194,8 @@ public class Scacchiera extends JFrame{
 	}
 
 	boolean mossa(Pedina sorgente, Casella destinazione) {
-		if(! (sorgente instanceof Pedina))
+		if(!(sorgente instanceof Pedina) || sorgente.getColore() != turno)
 			return false;
-				
 		if(!puoMuovere(sorgente, destinazione))
 			return false;
 		int mossa = sorgente
@@ -200,7 +205,18 @@ public class Scacchiera extends JFrame{
 		griglia[destinazione.riga][destinazione.colonna] = sorgente;
 		griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
 		sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
-		
+
+		if(turno==Colore.BIANCO && sorgente instanceof Pedone && sorgente.riga==0){
+			pedinaDaEvolvere = true;
+		}
+		else if(turno==Colore.NERO && sorgente instanceof Pedone && sorgente.riga==7){
+			pedinaDaEvolvere = true;
+		}
+
+		if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
+		else{turno=Colore.BIANCO;}
+
+
 		return true;
 	}
 
@@ -218,14 +234,15 @@ public class Scacchiera extends JFrame{
 		griglia[tempRiga][tempColonna]= new Casella(tempRiga, tempColonna);
 
 		if(turno==Colore.BIANCO){
-			if(scacco()==1)permesso = false;
+			if(scacco()== SCACCO_BIANCO)permesso = false;
 		}else{
-			if(scacco()==-1)permesso = false;
+			if(scacco()== SCACCO_NERO)permesso = false;
 		}
 		griglia[tempRiga][tempColonna]=griglia[destinazione.riga][destinazione.colonna];
 		sorgente.riga = tempRiga;
 		sorgente.colonna = tempColonna;
 		griglia[destinazione.riga][destinazione.colonna] = destinazione;
+
 		return permesso;
 	}
 
@@ -287,11 +304,11 @@ public class Scacchiera extends JFrame{
 						ArrayList<int[]> mosse= getMovesArrayList(pedina);
 						for(int[] coordinata :mosse){
 							if(turno==Colore.BIANCO){
-								if(puoMuovere(pedina,griglia[coordinata[0]][coordinata[1]] ) && scacco()!=1)
+								if(puoMuovere(pedina,griglia[coordinata[0]][coordinata[1]] ) && scacco()!= SCACCO_BIANCO)
 									//se true, esiste una mossa che mi salva dallo scacco
 									return true;
 							}else{
-								if(puoMuovere(pedina, griglia[coordinata[0]][coordinata[1]]) && scacco()!=-1)
+								if(puoMuovere(pedina, griglia[coordinata[0]][coordinata[1]]) && scacco()!= SCACCO_NERO)
 									//se true, esiste una mossa che mi salva dallo scacco
 									return true;
 							}
@@ -343,7 +360,7 @@ public class Scacchiera extends JFrame{
 
 
 	public static void main(String[] argv){
-		new Scacchiera(false);
+		new Scacchiera(true);
 
 	}
 

@@ -1,15 +1,6 @@
-
-
 import org.junit.Assert;
 import org.junit.Test;
 
-
-/**
- * Classe di test per i principali metodi della classe Scacchiera
- * 
- * @author Tommaso Dal Fior, Marco De Stefani, Davide Miglioranzi
- *
- */
 
 public class TestScacchi{
 	
@@ -100,7 +91,7 @@ Scacchiera s=new Scacchiera(true);
 	public void testScacco() {
 		Scacchiera scacchiera = new Scacchiera(true);
 		
-		Assert.assertTrue(scacchiera.scacco() == 1);	//scacco a re bianco
+		Assert.assertTrue(scacchiera.scacco() == Scacchiera.SCACCO_BIANCO);	//scacco a re bianco
 		
 		scacchiera.mossa((Pedina)scacchiera.griglia[7][3], scacchiera.griglia[7][4]);
 		Assert.assertTrue(scacchiera.scacco() == 0);	//nessuno scacco
@@ -109,7 +100,7 @@ Scacchiera s=new Scacchiera(true);
 		scacchiera.mossa((Pedina)scacchiera.griglia[5][6], scacchiera.griglia[6][5]);
 		scacchiera.mossa((Pedina)scacchiera.griglia[1][3], scacchiera.griglia[2][3]);
 		scacchiera.mossa((Pedina)scacchiera.griglia[6][5], scacchiera.griglia[5][6]);
-		Assert.assertTrue(scacchiera.scacco() == -1);	//scacco a re nero
+		Assert.assertTrue(scacchiera.scacco() == Scacchiera.SCACCO_NERO);	//scacco a re nero
 	}
 	
 	
