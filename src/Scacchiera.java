@@ -9,19 +9,69 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+/**
+ * La classe Scacchiera implementa
+ * le funzionalità grafiche, logiche del gioco 
+ * e gestisce anche l'interazione dei giocatori.
+ * 
+ * @author Omar Dabbagh
+ *
+ */
 
 public class Scacchiera extends JFrame{
-
+	
+	/**
+	 * 
+	 */
 	private static final int NUM = 8;
+	
+	/**
+	 * 
+	 */
 	Casella[][] griglia;
+	
+	/**
+	 * 
+	 */
 	private ActionListener action;
+	
+	/**
+	 * 
+	 */
 	private Colore turno;
+	
+	/**
+	 * 
+	 */
 	private Pedina reBianco;
+	
+	/**
+	 * 
+	 */
 	private Pedina reNero;
+	
+	/**
+	 * 
+	 */
 	private  boolean pedinaDaEvolvere = false;
+	
+	/**
+	 * 
+	 */
 	public static final  int SCACCO_BIANCO = 1;
+	
+	/**
+	 * 
+	 */
 	public static final int SCACCO_NERO = -1;
 
+	/**
+	 * Istanzia la scacchiera con le pedine
+	 * in base al parametro test.
+	 * 
+	 * @param test: true instanzia la classe in una configurazione per il test
+	 * 				false instanzia la classe per una normale partita
+	 */
 	public Scacchiera(boolean test){
 		if(test){
 			griglia = new Casella[8][8];
@@ -72,7 +122,9 @@ public class Scacchiera extends JFrame{
 
 	}
 
-
+	/*
+	 * 
+	 */
 	private void inizializzaGriglia() {
 		griglia = new Casella[NUM][NUM];
 		griglia[0][0] = new Torre(Colore.NERO, 0,0);
@@ -126,14 +178,10 @@ public class Scacchiera extends JFrame{
 						getContentPane().remove(sorgente);
 						getContentPane().remove(destinazione);
 						destinazione.removeActionListener(action);
-						//						griglia[destinazione.riga][destinazione.colonna] = sorgente;
-						//						griglia[sorgente.riga][sorgente.colonna] = new Casella(sorgente.riga, sorgente.colonna);
 
 						griglia[tempRiga][tempColonna].addActionListener(action);
 
 						getContentPane().add(griglia[tempRiga][tempColonna]);
-
-						//						sorgente.cambiaPosizione(destinazione.riga, destinazione.colonna);
 
 						getContentPane().add(sorgente);
 						Scacchiera.this.repaint();
@@ -141,11 +189,7 @@ public class Scacchiera extends JFrame{
 						if(pedinaDaEvolvere)
 							evoluzionePedina(sorgente);
 
-						//
-						//						if(turno.equals(Colore.BIANCO))turno=Colore.NERO;
-						//						else{turno=Colore.BIANCO;}
-
-						if(scacco() !=0 && scaccoMatto()){
+						if(inScacco() !=0 && inScaccoMatto()){
 							int scelta = JOptionPane.showConfirmDialog(null, turno+" hai perso!\nVuoi giocare una nuova partita?","Scacco Matto",JOptionPane.YES_NO_OPTION);
 							if(scelta == 0)
 								ricominciaPartita();
@@ -234,9 +278,9 @@ public class Scacchiera extends JFrame{
 		griglia[tempRiga][tempColonna]= new Casella(tempRiga, tempColonna);
 
 		if(turno==Colore.BIANCO){
-			if(scacco()== SCACCO_BIANCO)permesso = false;
+			if(inScacco()== SCACCO_BIANCO)permesso = false;
 		}else{
-			if(scacco()== SCACCO_NERO)permesso = false;
+			if(inScacco()== SCACCO_NERO)permesso = false;
 		}
 		griglia[tempRiga][tempColonna]=griglia[destinazione.riga][destinazione.colonna];
 		sorgente.riga = tempRiga;
@@ -247,7 +291,7 @@ public class Scacchiera extends JFrame{
 	}
 
 
-	public int scacco(){
+	public int inScacco(){
 		int[][] mosssePossibili;
 		Pedina pedina;
 		for(int i = 0; i < NUM; i++){
@@ -271,7 +315,7 @@ public class Scacchiera extends JFrame{
 		return 0;
 	}
 
-	public boolean scaccoMatto(){
+	public boolean inScaccoMatto(){
 
 		Pedina re = null;
 		if(turno == Colore.BIANCO)
@@ -279,36 +323,32 @@ public class Scacchiera extends JFrame{
 		else
 			re = reNero;
 
-		ArrayList<int []> mosseRe= getMovesArrayList(re);
+		ArrayList<int []> mosseRe= elencoMosse(re);
 		for(int[] coordinata : mosseRe){		
 			if(puoMuovere(re,griglia[coordinata[0]][coordinata[1]]))
 				return false;
 		}
-		if(!salvataggioRe())
+		if(!reFuoriScacco())
 			return true;
 		else
 			return false;
 	}
 
-	/**
-	 * Metodo per controllare che nessuna pedina possa salvare il re
-	 * @return true solo se con una mossa posso fare in modo che il re non sia più sotto scacco
-	 */
-	public boolean salvataggioRe(){
+	public boolean reFuoriScacco(){
 		Pedina pedina;
 		for(int i = 0; i < NUM; i++){
 			for(int j = 0; j < NUM; j++){
 				if(griglia[i][j] instanceof Pedina)	{
 					pedina = (Pedina) griglia[i][j];
 					if(pedina.getColore().equals(turno)){
-						ArrayList<int[]> mosse= getMovesArrayList(pedina);
+						ArrayList<int[]> mosse= elencoMosse(pedina);
 						for(int[] coordinata :mosse){
 							if(turno==Colore.BIANCO){
-								if(puoMuovere(pedina,griglia[coordinata[0]][coordinata[1]] ) && scacco()!= SCACCO_BIANCO)
+								if(puoMuovere(pedina,griglia[coordinata[0]][coordinata[1]] ) && inScacco()!= SCACCO_BIANCO)
 									//se true, esiste una mossa che mi salva dallo scacco
 									return true;
 							}else{
-								if(puoMuovere(pedina, griglia[coordinata[0]][coordinata[1]]) && scacco()!= SCACCO_NERO)
+								if(puoMuovere(pedina, griglia[coordinata[0]][coordinata[1]]) && inScacco()!= SCACCO_NERO)
 									//se true, esiste una mossa che mi salva dallo scacco
 									return true;
 							}
@@ -320,7 +360,7 @@ public class Scacchiera extends JFrame{
 		return false;
 	}
 
-	public ArrayList<int[]> getMovesArrayList(Pedina pedina){
+	public ArrayList<int[]> elencoMosse(Pedina pedina){
 		ArrayList<int[]> mosse=new ArrayList<int[]>();
 		if(pedina.getColore().equals(turno)){
 			int[][] moves= pedina.mossePossibili(griglia);
@@ -348,20 +388,9 @@ public class Scacchiera extends JFrame{
 		Scacchiera.this.repaint();
 	}
 
-	void print(int[][] mosse){
-		for(int i = 0; i < NUM; i++){
-			for(int j = 0; j < NUM; j++){
-				System.out.print(mosse[i][j]+ " ");
-			}
-			System.out.println("\n");
-		}
-
-	}
-
 
 	public static void main(String[] argv){
-		new Scacchiera(true);
-
+		new Scacchiera(false);
 	}
 
 

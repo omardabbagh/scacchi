@@ -10,7 +10,21 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * La classe EleconPedine crea un pannello 
+ * da cui è possibile sceglie una pedina
+ * che andrà a sostituire un pedone 
+ * che può evolvere
+ * 
+ * 
+ * @author Omar Dabbagh
+ *
+ */
 public class ElencoPedine extends JFrame{
+	
+	/**
+	 * Texture delle pedine fra cui scegliere
+	 */
 	private ImageIcon reginaBianco;
 	private ImageIcon alfiereBianco;
 	private ImageIcon torreBianco;
@@ -26,6 +40,14 @@ public class ElencoPedine extends JFrame{
 	private JButton regina = new JButton();
 	private JButton torre = new JButton();
 
+	/**
+	 * Istanzia la classe: crea elementi grafici
+	 * e gestisce la logica per la sostituzione del pedone
+	 * 
+	 * @param colore: colore per scegliere se usare texture nere o bianche
+	 * @param scacchiera: scacchiera
+	 * @param p: pedina da cambiare
+	 */
 	ElencoPedine(final Colore colore, final Scacchiera scacchiera, final Pedina p){
 		super("Scegli pedina");
 		try {
@@ -41,6 +63,7 @@ public class ElencoPedine extends JFrame{
 		} catch (IOException ex) {
 		}
 		
+		// usa texture nere o bianche
 		if (colore.equals(Colore.NERO)) {
 			alfiere.setIcon(alfiereNero);
 			cavallo.setIcon(cavalloNero);
@@ -53,6 +76,9 @@ public class ElencoPedine extends JFrame{
 			torre.setIcon(torreBianco);
 		}
 		
+		/*
+		 * aggiungi JButton per ciascuna pedina nell'elenco
+		 */
 		alfiere.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scacchiera.sostituisciPedina(p,(Pedina) (new Alfiere(colore, p.riga, p.colonna)));
@@ -77,6 +103,10 @@ public class ElencoPedine extends JFrame{
 				dispose();
 			}
 		});
+		
+		/*
+		 * Aggiungi i bottoni nel pannello
+		 */
 		JPanel pannello = new JPanel();
 		pannello.setLayout(new GridLayout(4,1));
 		pannello.add(alfiere);

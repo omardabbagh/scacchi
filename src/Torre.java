@@ -1,23 +1,36 @@
+
+
+/**
+ * La Classe Torre estende da Pedina 
+ *  implementa le mosse della torre.
+ *  
+ * @author Omar Dabbagh
+ *
+ */
 public class Torre extends Pedina {
+	
 	/**
-	 * 
-	 * Costruttore della classe Torre
-	 * 
+	 * Istanzia una Torre.
+	 * con colore: colore
+	 * alla riga e colonna x e y.
 	 * @param colore
+	 * @param x
+	 * @param y
 	 */
 	public Torre(Colore colore,  int x, int y) {
 		super(Nome.TORRE, colore, x, y);
 	}
-
+	
 	/**
-	 * 
-	 * @param posPedina
-	 * @param scacchiera
-	 * @return le mosse possibili della Torre per la prossima mossa ricordando
-	 *         che puo' muoversi solo in orizzontale e verticale. Inoltre
-	 *         controlla, in base alla posizione in cui si trova, che le mosse
-	 *         rimagano dentro la scacchiera
+	 * Restituisce una matrice di interi 8 x 8
+	 * corrispondeti alle mosse possibili della torre.
+	 * dove: 	0 -> non può spostarsi
+	 * 			1 -> può spostarsi senza mangiare
+	 * 			2 -> può spostarsi mangiando una pedina avversaria
+	 * @param scacchiera: scacchiera con le altre pedine in gioco
+	 * @return matrice della mosse
 	 */
+	@Override
 	public int[][] mossePossibili(Casella[][] scacchiera) {
 		int[][] mosse = new int[8][8];
 		int k;

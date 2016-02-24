@@ -1,30 +1,40 @@
+
+
+/**
+ * La Classe Regina estende da Pedina 
+ *  implementa le mosse della regina.
+ *  
+ * @author Omar Dabbagh
+ *
+ */
 public class Regina extends Pedina {
 	/**
-	 * 
-	 * Costruttore della classe Regina
-	 * 
+	 * Istanzia una Regina.
+	 * con colore: colore
+	 * alla riga e colonna x e y.
 	 * @param colore
+	 * @param x
+	 * @param y
 	 */
 	public Regina(Colore colore, int x, int y) {
 		super(Nome.REGINA, colore, x, y);
 	}
-
 	/**
-	 * 
-	 * @param posPedina
-	 * @param scacchiera
-	 * @return le mosse possibili della Regina per la prossima mossa ricordando
-	 *         che la regina muove in qualsiasi direzione. Inoltre controlla, in
-	 *         base alla posizione in cui si trova, che le mosse rimagano dentro
-	 *         la scacchiera
+	 * Restituisce una matrice di interi 8 x 8
+	 * corrispondeti alle mosse possibili della regina.
+	 * dove: 	0 -> non può spostarsi
+	 * 			1 -> può spostarsi senza mangiare
+	 * 			2 -> può spostarsi mangiando una pedina avversaria
+	 * @param scacchiera: scacchiera con le altre pedine in gioco
+	 * @return matrice della mosse
 	 */
+	@Override
 	public int[][] mossePossibili(Casella[][] scacchiera) {
 		int[][] mosse = new int[8][8];
 		int k;
 		int l;
 
-		// la regina può muoversi per tutta la riga i
-		// colonne sopra/sotto la posizione attuale
+		//mosse sulla riga
 		for (k = colonna + 1; k < nColonne; k++) {
 			if (!(scacchiera[riga][k] instanceof Pedina))
 				mosse[riga][k] = 1;
@@ -46,8 +56,7 @@ public class Regina extends Pedina {
 			}
 		}
 
-		// la regina può muoversi per tutta la colonna j
-		// righe dx/sx della posizione attuale
+		//mosse sulla colonna
 		for (k = riga + 1; k < nRighe; k++) {
 			if (!(scacchiera[k][colonna] instanceof Pedina))
 				mosse[k][colonna] = 1;
@@ -68,7 +77,7 @@ public class Regina extends Pedina {
 				break;
 			}
 		}
-		// obliquo dx su
+		//mossa obliqua destra/alto
 		k = riga - 1;
 		l = colonna + 1;
 		while (k >= 0 && l < nColonne) {
@@ -82,7 +91,7 @@ public class Regina extends Pedina {
 				break;
 			}
 		}
-		// obliquo sx su
+		//mossa obliqua sinistra/alto
 		k = riga - 1;
 		l = colonna - 1;
 		while (k >= 0 && l >= 0) {
@@ -96,7 +105,7 @@ public class Regina extends Pedina {
 				break;
 			}
 		}
-		// obliquo dx giu
+		//mosssa obliqua destra/basso
 		k = riga + 1;
 		l = colonna + 1;
 		while (k < nRighe && l < nColonne) {
@@ -110,7 +119,7 @@ public class Regina extends Pedina {
 				break;
 			}
 		}
-		// obliquo sx giu
+		//mossa obliqua sinistra/basso
 		k = riga + 1;
 		l = colonna - 1;
 		while (k < nRighe && l >= 0) {

@@ -4,23 +4,47 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
+/**
+ * La classe Pedina implementa le funzionalità grafiche delle pedine,
+ * ciascuna pedina è una specializzazione della classe pedina.
+ * Ognuna si diversificherà per: nome e colore
+ * 
+ * @author Omar Dabbagh
+ *
+ */
 public abstract class Pedina extends Casella{
-
-	private final Nome nome;
-	private final Colore colore;
-
-	protected static final int nRighe = 8;
-	protected static final int nColonne = 8;
-
-
+	
 	/**
-	 * 
-	 * 
-	 * 
-	 * @param 
-	 * @param colore
+	 * Nome della pedina:
+	 * Pedone, alfiere, cavallo torre, regina o re.
 	 */
+	private final Nome nome;
+	
+	/**
+	 * Colore pedina: Bianco o Neron
+	 */
+	private final Colore colore;
+	
+	/**
+	 * Numero righe della scacchiera
+	 */
+	protected static final int nRighe = 8;
+	
+	/**
+	 * Numero colonne della scacchiera
+	 */
+	protected static final int nColonne = 8;
+	
+	/**
+	 * Istanzia una pedina con rispettive caratteristiche,
+	 * caricando anche la propria texture.
+	 * 
+	 * @param nome
+	 * @param colore
+	 * @param riga
+	 * @param colonna
+	 */
+
 	public Pedina(Nome nome, Colore colore, int riga, int colonna) {
 		super(riga, colonna);
 		this.nome = nome;
@@ -49,30 +73,25 @@ public abstract class Pedina extends Casella{
 		
 		
 	}
-
+	
 	/**
 	 * 
-	 * @return nome
+	 * @return colore della pedina: bianco o nero
 	 */
-	public Nome getNome() {
-		return this.nome;
-	}
 
-	/**
-	 * 
-	 * @return colore
-	 */
 	public Colore getColore() {
 		return this.colore;
 	}
-
+	
 	/**
-	 * 
-	 * @param posPedina
-	 * @param griglia
-	 * @return 
+	 * Restituisce una matrice di interi 8 x 8
+	 * corrispondeti alle mosse possibili della pedina.
+	 * dove: 	0 -> non può spostarsi
+	 * 			1 -> può spostarsi senza mangiare
+	 * 			2 -> può spostarsi mangiando una pedina avversaria
+	 * @param scacchiera: scacchiera con le altre pedine in gioco
+	 * @return matrice della mosse
 	 */
-//	public int[][] mossePossibili(Posizione posPedina,
-//			Pedina[][] scacchiera);
-	public abstract int[][] mossePossibili(Casella[][] griglia);
+
+	public abstract int[][] mossePossibili(Casella[][] scacchiera);
 }

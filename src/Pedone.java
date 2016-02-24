@@ -1,23 +1,37 @@
+
+/**
+ * La Classe Pedone estende da Pedina 
+ *  implementa le mosse del pedone.
+ *  
+ * @author Omar Dabbagh
+ *
+ */
 public class Pedone extends Pedina {
+
+
 	/**
-	 * 
-	 * Costruttore della classe Pedone
-	 * 
+	 * Istanzia un pedone.
+	 * con colore: colore
+	 * alla riga e colonna x e y.
 	 * @param colore
+	 * @param x
+	 * @param y
 	 */
 	public Pedone(Colore colore, int x, int y) {
 		super(Nome.PEDONE, colore, x, y);
 	}
-
+	
 	/**
-	 * 
-	 * @param posPedina
-	 * @param scacchiera
-	 * @return le mosse possibili del Pedone per la prossima mossa controllando
-	 *         che si possa muovere solo in avanti e possa mangiare solo in
-	 *         diagonale. Inoltre controlla, in base alla posizione in cui si
-	 *         trova, che le mosse rimagano dentro la scacchiera
+	 * Restituisce una matrice di interi 8 x 8
+	 * corrispondeti alle mosse possibili del pedone.
+	 * dove: 	0 -> non può spostarsi
+	 * 			1 -> può spostarsi senza mangiare
+	 * 			2 -> può spostarsi mangiando una pedina avversaria
+	 * @param scacchiera: scacchiera con le altre pedine in gioco
+	 * @return matrice della mosse
 	 */
+	
+	@Override
 	public int[][] mossePossibili(Casella[][] scacchiera) {
 		int[][] mosse = new int[8][8];
 

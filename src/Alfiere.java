@@ -1,28 +1,40 @@
+/**
+ * La Classe Alfiere estende da Pedina 
+ *  implementa le mosse dell'alfiere
+ *  
+ * @author Omar Dabbagh
+ *
+ */
 public class Alfiere extends Pedina {
+	
 	/**
-	 * 
-	 * Costruttore della classe Alfiere
-	 * 
+	 * Istanzia un alfiere.
+	 * con colore: colore
+	 * alla riga e colonna x e y.
 	 * @param colore
+	 * @param x
+	 * @param y
 	 */
 	public Alfiere(Colore colore, int x, int y) {
 		super(Nome.ALFIERE, colore,x,y);
 	}
-
+	
 	/**
-	 * 
-	 * @param posPedina
-	 * @param scacchiera
-	 * @return le mosse possibili dell' alfiere per la prossima mossa ricordando
-	 *         che si muove solo in diagonale controlla, in base alla posizione
-	 *         in cui si trova, che le mosse rimagano dentro la scacchiera
+	 * Restituisce una matrice di interi 8 x 8
+	 * corrispondeti alle mosse possibili dell'alfiere.
+	 * dove: 	0 -> non può spostarsi
+	 * 			1 -> può spostarsi senza mangiare
+	 * 			2 -> può spostarsi mangiando una pedina avversaria
+	 * @param scacchiera: scacchiera con le altre pedine in gioco
+	 * @return matrice della mosse
 	 */
+	@Override
 	public int[][] mossePossibili(Casella[][] scacchiera) {
 		int[][] mosse = new int[8][8];
 		int r;
 		int c;
 
-		// obliquo dx su
+		// mossa obliqua: destra/alto.
 		r = riga - 1;
 		c = colonna + 1;
 		while (r >= 0 && c < nColonne) {
@@ -37,7 +49,7 @@ public class Alfiere extends Pedina {
 			}
 		}
 
-		// obliquo sx su
+		// mossa obliqua sinistra/alto
 		r = riga - 1;
 		c = colonna - 1;
 		while (r >= 0 && c >= 0) {
@@ -52,7 +64,7 @@ public class Alfiere extends Pedina {
 			}
 		}
 
-		// obliquo dx giu
+		// mossa obliqua destra/basso
 		r = riga + 1;
 		c = colonna + 1;
 		while (r < nRighe && c < nColonne) {
@@ -67,7 +79,7 @@ public class Alfiere extends Pedina {
 			}
 		}
 
-		// obliquo sx giu
+		// mossa obliqua sinistra/basso
 		r = riga + 1;
 		c = colonna - 1;
 		while (r < nRighe && c >= 0) {
